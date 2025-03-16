@@ -1,27 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import '../src/index.css';
+import React, { useState } from "react";
+import recipes from "./recipe"; 
+import "../src/index.css";
 
 const App = () => {
-  const [todo, setTodo] = useState(null); 
-  const [loading, setLoading] = useState(true); 
-
-  const fetchTodo = () => {
-    fetch('https://jsonplaceholder.typicode.com/todos/1')
-      .then(response => response.json())  
-      .then(json => {
-        setTodo(json);  
-        setLoading(false);  
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      });
-  };
-
-  useEffect(() => {
-    fetchTodo();
-  }, []); 
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+  // Tính toán tổng số trang
+  const totalPages = Math.ceil(recipes.length / itemsPerPage);
+  // Xác định dữ liệu hiển thị trên trang hiện tại
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const selectedRecipes = recipes.slice(startIndex, startIndex + itemsPerPage);
   return (
     <div>
       <header>
@@ -37,67 +25,71 @@ const App = () => {
         <button>Your Recipe Box</button>
         <div className="avatar"></div>
       </header>
-      <div className='upmain'>
-      <h1>Emma Gonzalez's Recipe Box</h1>
+
+      <div className="upmain">
+        <h1 className="big">Emma Gonzalez's Recipe Box</h1>
       </div>
+
       <main>
-        <div className='left'>
-          <div className='avatar-1'>
-          </div>
+        <div className="left">
+          <div className="avatar-1"></div>
         </div>
-        <div className='right'>
-          <p>Emma Gonzalez is a deputy editor at Chefify, bringing her expertise as a former cooking editor at The Los Angeles Times. She is also an accomplished author, contributing to numerous cookbooks and food publications. Originally from East Los Angeles, Emma now resides in New York City, where she explores a wide range of culinary delights. </p>
-          <div className='sub'>
+        <div className="right">
+          <p>Emma Gonzalez is a deputy editor at Chefify, bringing her expertise as a former cooking editor at The Los Angeles Times. She is also an accomplished author, contributing to numerous cookbooks and food publications. Originally from East Los Angeles, Emma now resides in New York City, where she explores a wide range of culinary delights</p>
+          <div className="sub">
             <a href="#">6.5k Subscribes</a>
             <button>Share</button>
           </div>
-          </div>
-        {/* <h1>Todo Item:</h1>
-        {loading ? (
-          <p>Loading...</p>
-        ) : (
-          <div>
-            <h2>Task: {todo?.title}</h2>
-            <p>Completed: {todo?.completed ? 'Yes' : 'No'}</p>
-            <p>Todo ID: {todo?.id}</p>
-            <p>User ID: {todo?.userId}</p>
-          </div>
-        )} */}
+        </div>
       </main>
-
-        <div className='menu'>
-          < nav className="nav-links">
+      <div className='menu'>
+        <nav className="nav-links">
           <a href="#">Saved recipe</a>
           <a href="#">Folders</a>
           <a href="#">Recipes by Gerneieve</a>
         </nav>
+      </div>
+
+      <div className="menu-image">
+        <div className="image-row">
+          {selectedRecipes.map((recipe, index) => (
+            <div key={index} className="image-box" style={{ backgroundImage: `url(${recipe.image})` }}>
+              <div className="image-info">
+                <h3 className="image-title">{recipe.name}</h3>
+                <p className="image-time">{recipe.time}</p>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className='menu-image'>
-          
-        </div>
+      </div>
+      {/* Nút chuyển trang */}
+      <div className="pagination">
+        <button disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button key={i + 1} className={currentPage === i + 1 ? "active" : ""} onClick={() => setCurrentPage(i + 1)}>
+            {i + 1}
+          </button>
+        ))}
+        <button disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+      </div>
+
       <footer>
-        <div className="footer-section">
-          <h1>About us</h1>
-          <br />
-          <p>
-            Welcome to our website, a wonderful place to explore and learn how to
-            cook like a pro.
-          </p>
-          <br />
-          <div className="info">
-            <input type="email" placeholder="Enter your email" className="email" />
+        <div className="footer-section text-left">
+          <h1 class="big">About us</h1>
+          <p>Welcome to our website, a wonderful place to explore and learn how to cook like a pro.</p>
+          <div className="info flex items-center ">
+            <input type="email" placeholder="Enter your email" className="email p-2 rounded" />
             <button>Send</button>
           </div>
-          <div className="info-2">
-            <div className="logo">
-            </div>
+          <div className="info-2 mt-12 flex items-center">
+            <div className="logo w-40 h-10 bg-cover bg-center"></div>
             <p>2023 Chefify company</p>
             <p>Terms of Service | Privacy Policy</p>
           </div>
         </div>
 
         <div className="footer-section">
-          <h3>Learn More</h3>
+          <h3 class="text-2xl font-bold md-2">Learn More</h3>
           <ul>
             <li><a href="#">Our Cooks</a></li>
             <li><a href="#">See Our Features</a></li>
